@@ -7,9 +7,9 @@ const CONFIG = {
   // Mostrar logs en consola (si es false, solo errores críticos van a consola)
   DEBUG_LOGS: false,
   // Resolución máxima permitida (videos más grandes se reducirán automáticamente)
-  // 1920x1080 (Full HD) es el objetivo para videoToLilVideo
-  MAX_WIDTH: 1920,
-  MAX_HEIGHT: 1080,
+  // 1280x720 es el límite seguro para evitar OOM en FFmpeg.js
+  MAX_WIDTH: 1280,
+  MAX_HEIGHT: 720,
   
   // Bitrate de video: target bitrate para mejor control de tamaño
   VIDEO_BITRATE: '800k',  // 800 kbps para buen balance

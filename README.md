@@ -29,9 +29,9 @@
 - **37-38**: Máxima compresión, archivos muy pequeños
 
 ### Resolución
-- Automáticamente escala videos grandes a **máximo 1080p Full HD**
+- Automáticamente escala videos grandes a **máximo 720p HD**
 - Mantiene el aspect ratio original
-- Optimizado para reproducción web
+- Optimizado para web y evita problemas de memoria
 
 ## 🔧 Tecnología
 
@@ -44,9 +44,9 @@
 
 | Video Original | videoToWeb | videoToLilVideo | Mejora |
 |----------------|------------|-----------------|--------|
-| 100 MB (1080p) | ~40 MB | ~35 MB | 12% mejor |
+| 100 MB (1080p) | ~40 MB (720p) | ~35 MB (720p) | 12% mejor |
 | 50 MB (720p)   | ~20 MB | ~17 MB | 15% mejor |
-| 200 MB (4K)    | ~65 MB | ~55 MB (1080p) | 15% mejor |
+| 200 MB (4K)    | ~65 MB (720p) | ~55 MB (720p) | 15% mejor |
 
 *Resultados aproximados con CRF 33*
 
@@ -56,8 +56,8 @@ Puedes modificar `script.js` para ajustar parámetros:
 
 ```javascript
 const CONFIG = {
-  MAX_WIDTH: 1920,              // Ancho máximo (Full HD)
-  MAX_HEIGHT: 1080,             // Alto máximo (Full HD)
+  MAX_WIDTH: 1280,              // Ancho máximo (720p HD)
+  MAX_HEIGHT: 720,              // Alto máximo (720p HD)
   CRF_MIN: 30,                  // CRF mínimo (mejor calidad)
   CRF_MAX: 38,                  // CRF máximo (más compresión)
   DEFAULT_CRF: 34,              // CRF por defecto
@@ -72,7 +72,7 @@ const CONFIG = {
 ## 🐛 Limitaciones Conocidas
 
 - **Videos muy largos (>30 min)** pueden causar problemas de memoria en el navegador
-- **Videos 4K** son escalados automáticamente a 1080p para evitar OOM
+- **Videos >720p** son escalados automáticamente a 720p para evitar OOM
 - **Navegadores antiguos** sin soporte WebAssembly no funcionarán
 
 ## 💡 Consejos de Uso
@@ -90,7 +90,7 @@ const CONFIG = {
 | Codec | VP8 | VP8 Optimizado |
 | Compresión | Buena | Mejor (~15% mejor) |
 | Velocidad | Rápida | Rápida |
-| Resolución máx | 720p | 1080p |
+| Resolución máx | 720p | 720p |
 | CRF range | 24-38 | 30-38 |
 | Bitrate | Variable | 800k target |
 | Objetivo | Conversión rápida | Mejor compresión |
