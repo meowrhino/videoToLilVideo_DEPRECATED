@@ -166,37 +166,46 @@ body {
 
 .quality-btn {
   flex: 1;
-  max-width: 200px;
-  padding: 0.875rem 1.5rem;
-  background: var(--card);
+  max-width: 220px;
+  padding: 0.875rem 1rem;
+  background: var(--bg);
   border: 2px solid var(--border);
   border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
   font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  align-items: center;
 }
 
 .quality-btn:hover {
   border-color: var(--primary);
   background: #faf5ff;
-  transform: translateY(-1px);
 }
 
 .quality-btn.active {
-  background: var(--primary);
   border-color: var(--primary);
-  color: white;
-  box-shadow: 0 4px 12px rgba(124, 90, 168, 0.3);
+  background: #faf5ff;
+  box-shadow: 0 0 0 3px rgba(124, 90, 168, 0.1);
 }
 
-.quality-btn.active:hover {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
-  transform: translateY(-1px);
+.quality-btn strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.quality-btn small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.quality-btn.active strong {
+  color: var(--primary);
 }
 
 /* Videos Grid */
