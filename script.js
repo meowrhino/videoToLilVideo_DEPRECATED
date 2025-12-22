@@ -11,8 +11,8 @@ const CONFIG = {
   MAX_WIDTH: 1280,
   MAX_HEIGHT: 720,
   
-  // Bitrate de video: target bitrate para mejor control de tamaño
-  VIDEO_BITRATE: '800k',  // 800 kbps para buen balance
+  // Bitrate de video: 0 = sin límite, usa CRF puro para control de calidad
+  VIDEO_BITRATE: '0',  // 0 = CRF puro (sin límite de bitrate)
   
   // CRF por defecto (Constant Rate Factor)
   // 3 opciones: 30 (Alta), 33 (Balance), 37 (Máxima)
@@ -327,7 +327,7 @@ async function convertVideo(videoData) {
       '-i', inputName,
       '-c:v', CONFIG.VIDEO_CODEC,  // libvpx (VP8)
       '-crf', crfValue.toString(),
-      '-b:v', CONFIG.VIDEO_BITRATE,  // 800k target bitrate
+      '-b:v', CONFIG.VIDEO_BITRATE,  // 0 = CRF puro
       '-quality', 'good',
       '-c:a', CONFIG.AUDIO_CODEC,  // libopus
       '-cpu-used', CONFIG.CPU_USED,  // 2 = mejor calidad
