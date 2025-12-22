@@ -11,28 +11,27 @@ const CONFIG = {
   MAX_WIDTH: 1920,
   MAX_HEIGHT: 1080,
   
-  // Bitrate de video: en modo CRF puro usar '0' (CQ). Si quieres forzar bitrate, cambia aquí.
-  VIDEO_BITRATE: '0',
+  // Bitrate de video: target bitrate para mejor control de tamaño
+  VIDEO_BITRATE: '800k',  // 800 kbps para buen balance
   
   // CRF por defecto (Constant Rate Factor)
-  // Rango para VP9: 28-40 (menor = mejor calidad, mayor = más compresión)
-  CRF_MIN: 28,
-  CRF_MAX: 40,
-  DEFAULT_CRF: 33,
+  // Rango para VP8 optimizado: 30-38 (menor = mejor calidad, mayor = más compresión)
+  CRF_MIN: 30,
+  CRF_MAX: 38,
+  DEFAULT_CRF: 34,
   
-  // Codec de video: VP9 para mejor compresión
-  VIDEO_CODEC: 'libvpx-vp9',  // VP9 codec para WebM (mejor que VP8)
+  // Codec de video: VP8 optimizado para compresión
+  VIDEO_CODEC: 'libvpx',  // VP8 codec para WebM (optimizado)
   
   // Codec de audio (no cambiar a menos que sepas lo que haces)
   AUDIO_CODEC: 'libopus',  // Opus codec para WebM
   
-  // Parámetros de optimización de FFmpeg para VP9
-  // cpu-used: 0-5 para VP9 (valores más altos = más rápido pero menor calidad)
-  // speed: 4 es buen balance velocidad-calidad para VP9
-  CPU_USED: '4',
+  // Parámetros de optimización de FFmpeg para VP8
+  // cpu-used: 0-16 para VP8 (valores más altos = más rápido pero menor calidad)
+  // speed: 2 es mejor calidad, 4 es más rápido
+  CPU_USED: '2',
   DEADLINE: 'good',
-  // VP9 específico: row-mt habilita multithreading por filas
-  ROW_MT: '1',
+  AUTO_ALT_REF: '1',
   
   // Ruta al worker de FFmpeg
   WORKER_PATH: 'ffmpeg-lib/ffmpeg-worker-webm.js',
@@ -304,13 +303,13 @@ async function convertVideo(videoData) {
         // Video más ancho, limitar por ancho
         newWidth = maxWidth;
         newHeight = Math.round(maxWidth / aspectRatio);
-        // Asegurar que sea par (requerido por VP9)
+        // Asegurar que sea par (requerido por VP8)
         newHeight = newHeight % 2 === 0 ? newHeight : newHeight - 1;
       } else {
         // Video más alto, limitar por alto
         newHeight = maxHeight;
         newWidth = Math.round(maxHeight * aspectRatio);
-        // Asegurar que sea par (requerido por VP9)
+        // Asegurar que sea par (requerido por VP8)
         newWidth = newWidth % 2 === 0 ? newWidth : newWidth - 1;
       }
       
@@ -325,17 +324,18 @@ async function convertVideo(videoData) {
     // ============================================================
     // PASO 2: Construir comando FFmpeg
     // ============================================================
-    // Parámetros optimizados para VP9
+    // Parámetros optimizados para VP8 con mejor compresión
     const ffmpegArgs = [
       '-i', inputName,
-      '-c:v', CONFIG.VIDEO_CODEC,  // libvpx-vp9
+      '-c:v', CONFIG.VIDEO_CODEC,  // libvpx (VP8)
       '-crf', crfValue.toString(),
-      '-b:v', CONFIG.VIDEO_BITRATE,  // 0 para modo CRF puro
+      '-b:v', CONFIG.VIDEO_BITRATE,  // 800k target bitrate
+      '-quality', 'good',
       '-c:a', CONFIG.AUDIO_CODEC,  // libopus
-      '-cpu-used', CONFIG.CPU_USED,  // 4 = balance velocidad-calidad
-      '-row-mt', CONFIG.ROW_MT,  // 1 = habilitar multithreading
+      '-cpu-used', CONFIG.CPU_USED,  // 2 = mejor calidad
       '-deadline', CONFIG.DEADLINE,  // 'good' = calidad decente
-      '-tile-columns', '2',  // Optimización VP9 para paralelismo
+      '-auto-alt-ref', CONFIG.AUTO_ALT_REF,  // 1 = mejor compresión
+      '-lag-in-frames', '25',  // Mejora compresión
       '-threads', '4'  // Número de threads
     ];
     

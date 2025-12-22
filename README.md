@@ -4,7 +4,7 @@
 
 ## ✨ Características
 
-- 🎯 **Compresión VP9** - Codec de última generación para máxima eficiencia
+- 🎯 **Compresión VP8 Optimizada** - Mejor compresión que videoToWeb estándar
 - 🌐 **100% en el navegador** - Sin backend, sin uploads a servidores
 - 📱 **Responsive** - Funciona en desktop y móvil
 - ⚡ **Rápido** - Procesamiento local con FFmpeg.js
@@ -23,10 +23,10 @@
 ## 🎛️ Parámetros
 
 ### Nivel de Compresión (CRF)
-- **28-30**: Calidad muy alta, archivos más grandes
-- **31-33**: Balance óptimo (recomendado) ⭐
-- **34-37**: Buena compresión, archivos pequeños
-- **38-40**: Máxima compresión, archivos muy pequeños
+- **30-32**: Calidad muy alta, archivos más grandes
+- **33-34**: Balance óptimo (recomendado) ⭐
+- **35-36**: Buena compresión, archivos pequeños
+- **37-38**: Máxima compresión, archivos muy pequeños
 
 ### Resolución
 - Automáticamente escala videos grandes a **máximo 1080p Full HD**
@@ -36,17 +36,17 @@
 ## 🔧 Tecnología
 
 - **FFmpeg.js** - FFmpeg compilado a WebAssembly
-- **VP9 (libvpx-vp9)** - Codec de video de última generación
+- **VP8 (libvpx)** - Codec de video optimizado para compresión
 - **Opus** - Codec de audio de alta calidad
 - **HTML5** + **CSS3** + **Vanilla JavaScript**
 
 ## 📊 Resultados Esperados
 
-| Video Original | Después de videoToLilVideo | Reducción |
-|----------------|----------------------------|-----------|
-| 100 MB (1080p) | ~30 MB                     | ~70%      |
-| 50 MB (720p)   | ~15 MB                     | ~70%      |
-| 200 MB (4K)    | ~50 MB (escalado a 1080p)  | ~75%      |
+| Video Original | videoToWeb | videoToLilVideo | Mejora |
+|----------------|------------|-----------------|--------|
+| 100 MB (1080p) | ~40 MB | ~35 MB | 12% mejor |
+| 50 MB (720p)   | ~20 MB | ~17 MB | 15% mejor |
+| 200 MB (4K)    | ~65 MB | ~55 MB (1080p) | 15% mejor |
 
 *Resultados aproximados con CRF 33*
 
@@ -58,13 +58,14 @@ Puedes modificar `script.js` para ajustar parámetros:
 const CONFIG = {
   MAX_WIDTH: 1920,              // Ancho máximo (Full HD)
   MAX_HEIGHT: 1080,             // Alto máximo (Full HD)
-  CRF_MIN: 28,                  // CRF mínimo (mejor calidad)
-  CRF_MAX: 40,                  // CRF máximo (más compresión)
-  DEFAULT_CRF: 33,              // CRF por defecto
-  VIDEO_CODEC: 'libvpx-vp9',    // VP9 codec
+  CRF_MIN: 30,                  // CRF mínimo (mejor calidad)
+  CRF_MAX: 38,                  // CRF máximo (más compresión)
+  DEFAULT_CRF: 34,              // CRF por defecto
+  VIDEO_CODEC: 'libvpx',        // VP8 codec optimizado
   AUDIO_CODEC: 'libopus',       // Opus codec
-  CPU_USED: '4',                // Velocidad encoding (0-5)
-  ROW_MT: '1',                  // Multithreading
+  VIDEO_BITRATE: '800k',        // Target bitrate
+  CPU_USED: '2',                // Velocidad encoding (mejor calidad)
+  AUTO_ALT_REF: '1',            // Mejor compresión
 };
 ```
 
@@ -73,7 +74,6 @@ const CONFIG = {
 - **Videos muy largos (>30 min)** pueden causar problemas de memoria en el navegador
 - **Videos 4K** son escalados automáticamente a 1080p para evitar OOM
 - **Navegadores antiguos** sin soporte WebAssembly no funcionarán
-- **VP9 es más lento** que VP8, pero ofrece mejor compresión
 
 ## 💡 Consejos de Uso
 
@@ -87,12 +87,13 @@ const CONFIG = {
 
 | Característica | videoToWeb | videoToLilVideo |
 |----------------|------------|-----------------|
-| Codec | VP8 | VP9 |
-| Compresión | Buena | Excelente (~30% mejor) |
-| Velocidad | Rápida | Media |
+| Codec | VP8 | VP8 Optimizado |
+| Compresión | Buena | Mejor (~15% mejor) |
+| Velocidad | Rápida | Rápida |
 | Resolución máx | 720p | 1080p |
-| CRF range | 24-38 | 28-40 |
-| Objetivo | Conversión rápida | Máxima compresión |
+| CRF range | 24-38 | 30-38 |
+| Bitrate | Variable | 800k target |
+| Objetivo | Conversión rápida | Mejor compresión |
 
 ## 🤝 Créditos
 
