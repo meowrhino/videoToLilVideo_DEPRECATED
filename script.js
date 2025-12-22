@@ -11,8 +11,8 @@ const CONFIG = {
   MAX_WIDTH: 1280,
   MAX_HEIGHT: 720,
   
-  // Bitrate de video: 0 = sin límite, usa CRF puro para control de calidad
-  VIDEO_BITRATE: '0',  // 0 = CRF puro (sin límite de bitrate)
+  // CRF puro: NO usar -b:v para que VP8 use CRF correctamente
+  // Según documentación oficial: -b:v 0 NO funciona, mejor omitirlo
   
   // CRF por defecto (Constant Rate Factor)
   // 3 opciones: 30 (Alta), 33 (Balance), 37 (Máxima)
@@ -326,8 +326,7 @@ async function convertVideo(videoData) {
     const ffmpegArgs = [
       '-i', inputName,
       '-c:v', CONFIG.VIDEO_CODEC,  // libvpx (VP8)
-      '-crf', crfValue.toString(),
-      '-b:v', CONFIG.VIDEO_BITRATE,  // 0 = CRF puro
+      '-crf', crfValue.toString(),  // CRF puro sin -b:v
       '-quality', 'good',
       '-c:a', CONFIG.AUDIO_CODEC,  // libopus
       '-cpu-used', CONFIG.CPU_USED,  // 2 = mejor calidad
@@ -450,7 +449,11 @@ async function convertVideo(videoData) {
     const webmSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
     const originalSizeMB = (videoData.originalSize / (1024 * 1024)).toFixed(2);
     const reduction = ((1 - blob.size / videoData.originalSize) * 100).toFixed(1);
-    logVideo(videoData.id, `Finalizado: ${webmSizeMB} MB (original ${originalSizeMB} MB, -${reduction}%)`);
+    const bitrateKbps = Math.round((blob.size * 8) / (videoData.metadata.duration * 1000));
+    logVideo(videoData.id, `✅ COMPLETADO - CRF ${videoData.crf}`);
+    logVideo(videoData.id, `📊 Bitrate resultante: ${bitrateKbps} kbps`);
+    logVideo(videoData.id, `💾 Tamaño: ${webmSizeMB} MB (original ${originalSizeMB} MB, -${reduction}%)`);
+    debugLog('[convertVideo] Bitrate calculado:', bitrateKbps, 'kbps');
 
     // Actualizar estado a "completado"
     updateVideoCompleted(videoData.id, blob, url);
