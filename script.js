@@ -11,8 +11,10 @@ const CONFIG = {
   MAX_WIDTH: 1280,
   MAX_HEIGHT: 720,
   
-  // Bitrate de video: 0 = sin límite, usa CRF puro para control de calidad
-  VIDEO_BITRATE: '0',  // 0 = CRF puro (sin límite de bitrate)
+  // Bitrates máximos por opción (VP8 necesita límite específico para CRF funcional)
+  VIDEO_BITRATE_ALTA: '2500k',     // Alta Calidad (CRF 30)
+  VIDEO_BITRATE_BALANCE: '1500k',  // Balance (CRF 33)
+  VIDEO_BITRATE_MAXIMA: '1000k',   // Máxima Compresión (CRF 37)
   
   // CRF por defecto (Constant Rate Factor)
   // 3 opciones: 30 (Alta), 33 (Balance), 37 (Máxima)
@@ -320,14 +322,30 @@ async function convertVideo(videoData) {
     }
     
     // ============================================================
-    // PASO 2: Construir comando FFmpeg
+    // PASO 2: Determinar bitrate máximo según CRF
+    // ============================================================
+    // VP8 necesita un bitrate máximo específico para que CRF funcione correctamente
+    let targetBitrate;
+    if (crfValue === CONFIG.CRF_MIN) {
+      targetBitrate = CONFIG.VIDEO_BITRATE_ALTA;
+    } else if (crfValue === CONFIG.DEFAULT_CRF) {
+      targetBitrate = CONFIG.VIDEO_BITRATE_BALANCE;
+    } else {
+      targetBitrate = CONFIG.VIDEO_BITRATE_MAXIMA;
+    }
+    
+    logVideo(videoData.id, `⚡ USANDO CRF ${crfValue} con bitrate máximo ${targetBitrate}`);
+    logVideo(videoData.id, `🎯 CRF configurado: ${crfValue} (menor = mejor calidad)`);
+    
+    // ============================================================
+    // PASO 3: Construir comando FFmpeg
     // ============================================================
     // Parámetros optimizados para VP8 con mejor compresión
     const ffmpegArgs = [
       '-i', inputName,
       '-c:v', CONFIG.VIDEO_CODEC,  // libvpx (VP8)
       '-crf', crfValue.toString(),
-      '-b:v', CONFIG.VIDEO_BITRATE,  // 0 = CRF puro
+      '-b:v', targetBitrate,  // Bitrate máximo específico por opción
       '-quality', 'good',
       '-c:a', CONFIG.AUDIO_CODEC,  // libopus
       '-cpu-used', CONFIG.CPU_USED,  // 2 = mejor calidad
