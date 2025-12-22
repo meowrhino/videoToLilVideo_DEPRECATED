@@ -101,7 +101,7 @@ const videosContainer = document.getElementById('videosContainer');
 const videosList = document.getElementById('videosList');
 const videoCount = document.getElementById('videoCount');
 const downloadAllBtn = document.getElementById('downloadAllBtn');
-const qualityRadios = document.querySelectorAll('input[name="quality"]');
+const qualityButtons = document.querySelectorAll('.quality-btn');
 const uploadTitle = document.getElementById('uploadTitle');
 const uploadSubtitle = document.getElementById('uploadSubtitle');
 
@@ -953,14 +953,16 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
-// Actualizar CRF desde radio buttons
-function updateCRFFromRadio() {
-  const selectedRadio = document.querySelector('input[name="quality"]:checked');
-  if (selectedRadio) {
-    const crf = parseInt(selectedRadio.value);
-    state.crf = crf;
-    debugLog('[updateCRFFromRadio] CRF seleccionado:', crf);
-  }
+// Actualizar CRF desde botones
+function updateCRFFromButton(button) {
+  // Remover active de todos los botones
+  qualityButtons.forEach(btn => btn.classList.remove('active'));
+  // Agregar active al botón clickeado
+  button.classList.add('active');
+  // Actualizar CRF
+  const crf = parseInt(button.dataset.crf);
+  state.crf = crf;
+  debugLog('[updateCRFFromButton] CRF seleccionado:', crf);
 }
 
 // Event Listeners
@@ -1001,9 +1003,9 @@ downloadAllBtn.addEventListener('click', () => {
   downloadAll();
 });
 
-  // Event listeners para radio buttons
-  qualityRadios.forEach(radio => {
-    radio.addEventListener('change', updateCRFFromRadio);
+  // Event listeners para botones de calidad
+  qualityButtons.forEach(button => {
+    button.addEventListener('click', () => updateCRFFromButton(button));
   });
 
 // Inicializar
@@ -1013,8 +1015,13 @@ document.addEventListener('DOMContentLoaded', () => {
   debugLog('[INIT] Navegador:', navigator.userAgent);
   debugLog('[INIT] Soporte Worker:', typeof Worker !== 'undefined');
   debugLog('='.repeat(60));
-  // Inicializar CRF desde radio button seleccionado
-  state.crf = CONFIG.DEFAULT_CRF;
-  updateCRFFromRadio();
+  // Inicializar CRF desde botón activo
+  const activeButton = document.querySelector('.quality-btn.active');
+  if (activeButton) {
+    state.crf = parseInt(activeButton.dataset.crf);
+  } else {
+    state.crf = CONFIG.DEFAULT_CRF;
+  }
+  debugLog('[INIT] CRF inicial:', state.crf);
   loadFFmpeg();
 });

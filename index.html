@@ -22,38 +22,10 @@
     </div>
 
     <!-- Controls -->
-    <div class="controls-panel">
-      <div class="control-card">
-        <div class="control-header">
-          <h4>ajusta la compresión</h4>
-        </div>
-        <div class="control-group">
-          <label>nivel de compresión</label>
-          <div class="quality-options">
-            <label class="quality-option">
-              <input type="radio" name="quality" value="30">
-              <span class="option-label">
-                <strong>Alta Calidad</strong>
-                <small>Videos con movimiento</small>
-              </span>
-            </label>
-            <label class="quality-option">
-              <input type="radio" name="quality" value="33" checked>
-              <span class="option-label">
-                <strong>Balance Óptimo</strong>
-                <small>Recomendado</small>
-              </span>
-            </label>
-            <label class="quality-option">
-              <input type="radio" name="quality" value="37">
-              <span class="option-label">
-                <strong>Máx. Compresión</strong>
-                <small>Videos estáticos/largos</small>
-              </span>
-            </label>
-          </div>
-        </div>
-      </div>
+    <div class="quality-buttons">
+      <button class="quality-btn" data-crf="30">Alta Calidad</button>
+      <button class="quality-btn active" data-crf="33">Balance</button>
+      <button class="quality-btn" data-crf="37">Máx. Compresión</button>
     </div>
 
     <!-- Videos Grid -->
