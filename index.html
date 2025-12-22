@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>videoToLilVideo - Compresor de Video MP4</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Upload Area -->
+    <div class="upload-area" id="uploadArea">
+      <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      <h3 id="uploadTitle">arrastra videos aquí</h3>
+      <p id="uploadSubtitle">o haz clic para seleccionar archivos (mp4, mov, avi, mkv, webm...)</p>
+      <button class="btn-primary" id="selectBtn">seleccionar archivos</button>
+      <input type="file" id="fileInput" accept="video/*" multiple hidden>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-panel">
+      <div class="control-card">
+        <div class="control-header">
+          <h4>ajusta la compresión</h4>
+        </div>
+        <div class="control-group">
+          <label for="qualitySlider">nivel de compresión</label>
+          <div class="control-row">
+            <input type="range" id="qualitySlider" min="18" max="28" step="1" value="23">
+            <span class="control-value" id="qualityValue">23</span>
+          </div>
+          <p class="control-help" id="qualityDescription">balance óptimo - calidad excelente</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Videos Grid -->
+    <div id="videosContainer" class="videos-grid">
+      <div class="grid-header">
+        <h3 id="videoCount">0 videos comprimidos</h3>
+        <button class="btn-secondary" id="downloadAllBtn">descargar todo</button>
+      </div>
+      <div id="videosList" class="videos-list"></div>
+    </div>
+
+    <div class="branding-badge">
+      <a href="https://meowrhino.studio" target="_blank" rel="noopener noreferrer">meowrhino.studio</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
