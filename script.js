@@ -15,10 +15,10 @@ const CONFIG = {
   VIDEO_BITRATE: '800k',  // 800 kbps para buen balance
   
   // CRF por defecto (Constant Rate Factor)
-  // Rango para VP8 optimizado: 30-38 (menor = mejor calidad, mayor = más compresión)
+  // 3 opciones: 30 (Alta), 33 (Balance), 37 (Máxima)
   CRF_MIN: 30,
-  CRF_MAX: 38,
-  DEFAULT_CRF: 34,
+  CRF_MAX: 37,
+  DEFAULT_CRF: 33,
   
   // Codec de video: VP8 optimizado para compresión
   VIDEO_CODEC: 'libvpx',  // VP8 codec para WebM (optimizado)
@@ -101,9 +101,7 @@ const videosContainer = document.getElementById('videosContainer');
 const videosList = document.getElementById('videosList');
 const videoCount = document.getElementById('videoCount');
 const downloadAllBtn = document.getElementById('downloadAllBtn');
-const qualitySlider = document.getElementById('qualitySlider');
-const qualityValue = document.getElementById('qualityValue');
-const qualityDescription = document.getElementById('qualityDescription');
+const qualityRadios = document.querySelectorAll('input[name="quality"]');
 const uploadTitle = document.getElementById('uploadTitle');
 const uploadSubtitle = document.getElementById('uploadSubtitle');
 
@@ -955,29 +953,14 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
-// Actualizar descripción del CRF
-function updateCRFDescription() {
-  const crf = parseInt(qualitySlider.value);
-  qualityValue.textContent = crf;
-  state.crf = crf;
-
-  let description = '';
-  const nearLossless = CONFIG.CRF_MIN + 2;
-  const highQuality = CONFIG.CRF_MIN + 6;
-  const balanced = CONFIG.CRF_MIN + 10;
-
-  if (crf <= nearLossless) {
-    description = 'calidad muy alta - archivos más pesados';
-  } else if (crf <= highQuality) {
-    description = 'calidad alta - buen balance';
-  } else if (crf <= balanced) {
-    description = 'calidad media - archivos más pequeños';
-  } else {
-    description = 'calidad baja - archivos muy pequeños';
+// Actualizar CRF desde radio buttons
+function updateCRFFromRadio() {
+  const selectedRadio = document.querySelector('input[name="quality"]:checked');
+  if (selectedRadio) {
+    const crf = parseInt(selectedRadio.value);
+    state.crf = crf;
+    debugLog('[updateCRFFromRadio] CRF seleccionado:', crf);
   }
-
-  qualityDescription.textContent = description;
-  debugLog('[updateCRFDescription] CRF:', crf, '-', description);
 }
 
 // Event Listeners
@@ -1018,7 +1001,10 @@ downloadAllBtn.addEventListener('click', () => {
   downloadAll();
 });
 
-  qualitySlider.addEventListener('input', updateCRFDescription);
+  // Event listeners para radio buttons
+  qualityRadios.forEach(radio => {
+    radio.addEventListener('change', updateCRFFromRadio);
+  });
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
@@ -1027,10 +1013,8 @@ document.addEventListener('DOMContentLoaded', () => {
   debugLog('[INIT] Navegador:', navigator.userAgent);
   debugLog('[INIT] Soporte Worker:', typeof Worker !== 'undefined');
   debugLog('='.repeat(60));
-  qualitySlider.min = CONFIG.CRF_MIN;
-  qualitySlider.max = CONFIG.CRF_MAX;
-  qualitySlider.value = CONFIG.DEFAULT_CRF;
+  // Inicializar CRF desde radio button seleccionado
   state.crf = CONFIG.DEFAULT_CRF;
-  updateCRFDescription();
+  updateCRFFromRadio();
   loadFFmpeg();
 });
