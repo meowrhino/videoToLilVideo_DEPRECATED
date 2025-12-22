@@ -504,7 +504,7 @@ async function handleFiles(files) {
     debugLog('[handleFiles] Procesando archivo:', file.name, 'tipo:', file.type, 'tamaño:', file.size);
     const metadata = await extractMetadata(file);
     const videoData = {
-      id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `${file.name}_crf${state.crf}_${Date.now()}`,
       originalFile: file,
       originalSize: file.size,
       webmBlob: null,
