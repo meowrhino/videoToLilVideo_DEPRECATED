@@ -276,30 +276,41 @@ async function convertVideo(videoData) {
   // ============================================================
   // PASO 1: Recrear el worker para cada conversión
   // ============================================================
-  // Esto evita el error "already running" que ocurre cuando un worker
-  // anterior crashó o quedó en un estado inconsistente
-  if (!state.ffmpeg || !state.ffmpegLoaded) {
-    debugLog('[convertVideo] Creando worker y esperando ready...');
-    state.ffmpeg = new Worker(CONFIG.WORKER_PATH);
-    state.ffmpegLoaded = false;
-    await new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('Timeout esperando worker')), CONFIG.WORKER_READY_TIMEOUT);
-      state.ffmpeg.onmessage = (e) => {
-        if (e.data.type === 'ready') {
-          clearTimeout(timeout);
-          debugLog('[convertVideo] ✓ Worker listo');
-          state.ffmpegLoaded = true;
-          resolve();
-        }
-      };
-      state.ffmpeg.onerror = (err) => {
-        clearTimeout(timeout);
-        reject(err);
-      };
-    });
-  } else {
-    debugLog('[convertVideo] Reutilizando worker ya cargado');
+  // Siempre recrear el worker antes de cada conversión.
+  // Este build de ffmpeg.js no soporta reutilización: tras una ejecución
+  // el worker queda en estado inconsistente y las siguientes conversiones se cuelgan.
+  debugLog('[convertVideo] Terminando worker anterior (si existe) y creando uno nuevo...');
+  
+  // Terminar worker anterior si existe
+  if (state.ffmpeg) {
+    try {
+      state.ffmpeg.terminate();
+      debugLog('[convertVideo] Worker anterior terminado');
+    } catch (e) {
+      debugLog('[convertVideo] Error terminando worker anterior:', e);
+    }
+    state.ffmpeg = null;
   }
+  
+  // Crear nuevo worker
+  state.ffmpeg = new Worker(CONFIG.WORKER_PATH);
+  state.ffmpegLoaded = false;
+  
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('Timeout esperando worker')), CONFIG.WORKER_READY_TIMEOUT);
+    state.ffmpeg.onmessage = (e) => {
+      if (e.data.type === 'ready') {
+        clearTimeout(timeout);
+        debugLog('[convertVideo] ✓ Worker listo');
+        state.ffmpegLoaded = true;
+        resolve();
+      }
+    };
+    state.ffmpeg.onerror = (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    };
+  });
   
   if (!state.ffmpeg || !state.ffmpegLoaded) {
     console.error('[convertVideo] FFmpeg no está cargado');
